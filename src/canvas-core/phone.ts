@@ -8,7 +8,7 @@ export type Msg = { side: "me" | "them"; text: string; at: number; read?: number
 export type PhoneOpts = {
   cx: number; cy: number; k: number; title: string; avatar: string;
   msgs: Msg[]; draft?: string; caret?: boolean; typing?: number; lock?: number; lockText?: string; lockFrom?: number;
-  warm?: number; hand?: Look; tilt?: number; dim?: number;
+  warm?: number; hand?: Look; tilt?: number; dim?: number; noHand?: boolean;
 };
 const PW = 470, PH = 920, SW = 424, SH = 836, TOP = -SH / 2, HEAD = 104, INPUT = 86, FONT = 28, LINE = 36;
 
@@ -23,8 +23,8 @@ export const drawPhone = (g: Gfx, ctx: Ctx, env: Env, f: number, o: PhoneOpts) =
   g.push(o.cx, o.cy, o.k, ((o.tilt ?? 0) * Math.PI) / 180);
   // the hand behind: palm and fingers wrapping the left edge
   const palm: P[] = [[-150, 230], [-230, 300], [-260, 420], [-200, 560], [60, 560], [120, 470], [90, 360], [-40, 300]];
-  g.group("paint", () => g.form(palm, hand.skin, hand.skinShade, { seed: 11, light: [-8, -8] }));
-  g.group("ink", () => g.pen(palm, { closed: true, w: 3, seed: 12, wobble: 0.6, boil: 0.35, taper: 0.5 }));
+  if (!o.noHand) g.group("paint", () => g.form(palm, hand.skin, hand.skinShade, { seed: 11, light: [-8, -8] }));
+  if (!o.noHand) g.group("ink", () => g.pen(palm, { closed: true, w: 3, seed: 12, wobble: 0.6, boil: 0.35, taper: 0.5 }));
   // the phone
   const body = softBox(0, 0, PW, PH, 5.5, 40), screen = softBox(0, 0, SW, SH, 6, 40);
   g.group("paint", () => g.form(body, "#3a3a46", "#20202a", { seed: 20, light: [-6, -8] }));
@@ -78,8 +78,8 @@ export const drawPhone = (g: Gfx, ctx: Ctx, env: Env, f: number, o: PhoneOpts) =
   g.group("ink", () => { g.pen(body, { closed: true, w: 3.2, seed: 21, wobble: 0.5, boil: 0.35, taper: 0.5 }); g.pen(screen, { closed: true, w: 1.8, seed: 22, wobble: 0.3, boil: 0.3, opacity: 0.55, retrace: false }); g.pen(oval(0, -PH / 2 + 22, 30, 5, 10), { closed: true, w: 1.6, seed: 23, opacity: 0.6, retrace: false }); });
   // the thumb over the right edge, in front
   const thumb: P[] = [[150, 360], [215, 250], [250, 200], [272, 214], [262, 280], [222, 400], [180, 460]];
-  g.group("paint", () => g.form(thumb, hand.skin, hand.skinShade, { seed: 30, light: [-6, -6] }));
-  g.group("ink", () => { g.pen(thumb, { closed: true, w: 2.8, seed: 31, wobble: 0.5, boil: 0.35, taper: 0.5 }); g.pen([[236, 228], [252, 222], [262, 230]], { w: 1.4, seed: 32, opacity: 0.6, retrace: false }); });
+  if (!o.noHand) g.group("paint", () => g.form(thumb, hand.skin, hand.skinShade, { seed: 30, light: [-6, -6] }));
+  if (!o.noHand) g.group("ink", () => { g.pen(thumb, { closed: true, w: 2.8, seed: 31, wobble: 0.5, boil: 0.35, taper: 0.5 }); g.pen([[236, 228], [252, 222], [262, 230]], { w: 1.4, seed: 32, opacity: 0.6, retrace: false }); });
   g.pop();
 };
 export const _P = GRAPHITE;

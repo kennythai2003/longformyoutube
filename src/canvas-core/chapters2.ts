@@ -174,7 +174,7 @@ export const ch10Busy = (ctx: Ctx, f: number, env: Env) => {
   const g = newG(ctx, env, f);
   pool(g, 960, 540, 900, 500, "#efdcc0", 0.6, 1);
   // three panels: Rae at her desk under paperwork, Jo asleep on the bus, Rae again, carrying a box (moving house)
-  panel(g, 90, 110, 650, 640, pop(f, tBusy, 12), 10, "#e6eef3", () => {
+  panel(g, 90, 110, 650, 640, pop(f, Math.min(tBusy, cue("And here's the thing") + 8), 12), 10, "#e6eef3", () => {
     g.group("paint", () => { g.form(polyPts([[180, 520], [560, 520], [560, 540], [180, 540]], 6), "#a97c5f", "#7a5644", { seed: 11 }); for (let i = 0; i < 6; i++) g.form(polyPts([[420 + (i % 2) * 4, 516 - i * 14], [540, 516 - i * 14], [540, 504 - i * 14], [420, 504 - i * 14]], 3), "#fbf7ef", "#d9d0c4", { seed: 12 + i }); g.form(polyPts([[240, 518], [330, 518], [342, 470], [252, 470]], 3), "#55525e", "#33313b", { seed: 20 }); });
     at(g, 300, 630, 0.95, withExpr({ ...sitChair(), wristR: [40, -132], wristL: [30, -128] }, { brows: -0.5, mouth: "flat", eyes: "down", look: [6, 4] }), RAE, f, { chair: true, shadow: 0 });
   });

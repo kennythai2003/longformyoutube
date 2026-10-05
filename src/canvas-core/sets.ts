@@ -62,3 +62,24 @@ export const duskSet = (env: Env) => cachedSet(env, "dusk", (g, ctx) => {
     for (let i = 0; i < 14; i++) ink(g, [[100 + i * 130, 700], [102 + i * 130, 640]], 90 + i, 2, false, 0.6); ink(g, [[60, 660], [1900, 655]], 110, 1.8, false, 0.55); ink(g, [[60, 684], [1900, 680]], 111, 1.6, false, 0.5);
   });
 });
+
+/** a park in soft afternoon light: grass from y 600, trees, a far path */
+export const parkSet = (env: Env) => cachedSet(env, "park", (g, ctx) => {
+  ctx.fillStyle = "#f6efe2"; ctx.fillRect(0, 0, env.W, env.H);
+  field(g, boxPts(-30, -30, 1950, 640, 8), "#cfe3ee", 1); pool(g, 1400, 120, 700, 260, "#fbf1d6", 0.8, 2);
+  g.group("paint", () => { [[380, 150, 150], [1100, 110, 190], [1650, 200, 120]].forEach(([x, y, w], i) => W(g, oval(x, y, w, 34, 10), "#fbf8f0", 3 + i, 0.85, false)); });
+  field(g, polyPts([[-30, 600], [500, 560], [1000, 590], [1500, 550], [1950, 580], [1950, 700], [-30, 700]], 6), "#a9c79a", 6);
+  field(g, boxPts(-30, 640, 1950, 1110, 8), "#9cc48c", 7); pool(g, 960, 860, 900, 220, "#b6d6a2", 0.6, 8);
+  field(g, polyPts([[-30, 700], [700, 670], [1950, 690], [1950, 720], [700, 700], [-30, 730]], 6), "#e6dac2", 9);
+  [[180, 640, 1.3, 10], [520, 600, 0.9, 20], [1420, 600, 1.0, 30], [1760, 650, 1.4, 40]].forEach(([x, y, s, sd]) => {
+    const trunk = polyPts([[x - 10 * s, y], [x - 7 * s, y - 130 * s], [x + 7 * s, y - 130 * s], [x + 10 * s, y]], 4), crown: P[] = []; const r = rng(sd);
+    for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2, rr = (70 + r() * 20) * s; crown.push([x + Math.cos(a) * rr * 1.1, y - 190 * s + Math.sin(a) * rr * 0.9]); }
+    g.group("paint", () => { g.form(trunk, "#9b7660", "#6e5040", { seed: sd }); g.form(crown, "#8fbf82", "#5f9160", { seed: sd + 1, light: [-10, -10] }); });
+    g.group("ink", () => { ink(g, trunk, sd + 2, 2.2); ink(g, crown, sd + 3, 2.4); });
+  });
+  g.group("ink", () => { const r = rng(50); for (let i = 0; i < 70; i++) { const x = r() * 1920, y = 720 + r() * 360; ink(g, [[x, y], [x + 4, y - 12 - r() * 8]], 60 + i, 1.4, false, 0.4); } });
+  // the picnic blanket, gingham
+  const bl = polyPts([[560, 800], [1360, 800], [1460, 960], [460, 960]], 8);
+  g.group("paint", () => { g.form(bl, "#f3d9c9", "#d9b29e", { seed: 200 }); for (let i = 0; i < 8; i++) { const u0 = i / 8, u1 = (i + 0.5) / 8; W(g, polyPts([[560 + 800 * u0, 800], [560 + 800 * u1, 800], [460 + 1000 * u1, 960], [460 + 1000 * u0, 960]], 3), "#e39a9c", 210 + i, 0.4, false); } for (let j = 0; j < 4; j++) { const v0 = j / 4, v1 = (j + 0.5) / 4, y0 = 800 + 160 * v0, y1 = 800 + 160 * v1; W(g, polyPts([[560 - 100 * v0, y0], [1360 + 100 * v0, y0], [1360 + 100 * v1, y1], [560 - 100 * v1, y1]], 3), "#e39a9c", 230 + j, 0.35, false); } });
+  g.group("ink", () => ink(g, bl, 240, 2.4));
+});

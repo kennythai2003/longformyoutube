@@ -6,6 +6,7 @@ import { drawCaption } from "./caption";
 import { ch1Street, ch2Phone, ch3TinCan, ch4Bedroom } from "./chapters1";
 import { ch10Busy, ch11Pattern, ch5Memory, ch6YeahHaha, ch7Interview, ch8Clouds, ch9Chess } from "./chapters2";
 import { ch12Jo, ch13Door, ch14Candle, ch15Detective, ch16Couch, ch17Polaroids } from "./chapters3";
+import { ch18Watering, ch19FaceDown, ch19Sack, ch20Picnic, ch21PhoneDown, ch22Dawn } from "./chapters4";
 import { bloomPath, clipTo, cue, finishPaper, ground, newG, ramp, text, SERIF } from "./kit";
 
 const FPS = 24, BPM = 72, DURATION = 13802, BLOOM = 22;
@@ -33,11 +34,12 @@ export const CHAPTERS: Chapter[] = [
   { id: "detective", from: cue("You have to stop looking at the occasional"), draw: ch15Detective, bloom: [420, 300] },
   { id: "couch", from: cue("People who want to talk to you can still be busy"), draw: ch16Couch, bloom: [800, 600] },
   { id: "polaroids", from: cue("And this is where you need to be honest"), draw: ch17Polaroids, bloom: [330, 300] },
-  { id: "watering", from: cue("And because you remember that version"), draw: todo("18 · watering the dead plant"), bloom: [960, 540] },
-  { id: "facedown", from: cue("So stop trying"), draw: todo("19 · face-down"), bloom: [960, 540] },
-  { id: "picnic", from: cue("The people who genuinely want to be in your life"), draw: todo("20 · the picnic"), bloom: [960, 540] },
-  { id: "phonedown", from: cue("So if you're currently staring at a chat"), draw: todo("21 · put the phone down"), bloom: [960, 540] },
-  { id: "dawn", from: cue("So stop watering the dead plant"), draw: todo("22 · dawn"), bloom: [960, 540] },
+  { id: "watering", from: cue("And because you remember that version"), draw: ch18Watering, bloom: [1500, 500] },
+  { id: "facedown", from: cue("So stop trying"), draw: ch19FaceDown, bloom: [860, 500] },
+  { id: "sack", from: cue("Sometimes the most respectful thing"), draw: ch19Sack, bloom: [700, 500] },
+  { id: "picnic", from: cue("The people who genuinely want to be in your life"), draw: ch20Picnic, bloom: [960, 800] },
+  { id: "phonedown", from: cue("So if you're currently staring at a chat"), draw: ch21PhoneDown, bloom: [1500, 500] },
+  { id: "dawn", from: cue("So stop watering the dead plant"), draw: ch22Dawn, bloom: [1500, 500] },
 ];
 // the table must run forward
 CHAPTERS.forEach((c, i) => { if (i && c.from <= CHAPTERS[i - 1].from) throw new Error(`chapter ${c.id} starts before ${CHAPTERS[i - 1].id}`); });
