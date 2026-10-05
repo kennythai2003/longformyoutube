@@ -8,6 +8,7 @@ const CAST: Look[] = [SAM, JO, RAE, THEM];
 const POSES: [string, (f: number) => Pose][] = [
   ["stand", () => stand()], ["walk 0", () => walk(0)], ["walk .25", () => walk(0.25)], ["sitPhone", () => sitPhone()],
   ["sitCross", () => sitCross()], ["standChin", () => standChin()], ["standPour", () => standPour()], ["standPhone", () => standPhone()],
+  ["back", (f) => ({ ...walk(f / 30), back: true })],
   ["flip", () => ({ ...stand({ mouth: "smile", brows: 0.6, eyes: "open", look: [0, 0] }), flip: true })],
 ];
 const draw = (ctx: Ctx, f: number, env: Env) => {

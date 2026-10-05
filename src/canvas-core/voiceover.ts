@@ -3,7 +3,7 @@
 import { Ctx, Env } from "./core";
 import { Film } from "./film";
 import { drawCaption } from "./caption";
-import { ch4Bedroom } from "./chapters1";
+import { ch1Street, ch2Phone, ch3TinCan, ch4Bedroom } from "./chapters1";
 import { bloomPath, clipTo, cue, finishPaper, ground, newG, ramp, text, SERIF } from "./kit";
 
 const FPS = 24, BPM = 72, DURATION = 13802, BLOOM = 22;
@@ -14,9 +14,9 @@ type Chapter = { id: string; from: number; draw: Draw; bloom: [number, number]; 
 const todo = (title: string): Draw => (ctx, f, env) => { ground(ctx, env, "#efe6d6"); text(ctx, env, title, env.W / 2, env.H / 2 - 40, { font: SERIF(64) }); text(ctx, env, `frame ${f}`, env.W / 2, env.H / 2 + 30, { font: SERIF(28), alpha: 0.5 }); };
 
 export const CHAPTERS: Chapter[] = [
-  { id: "street", from: 0, draw: todo("1 · the street"), bloom: [960, 540] },
-  { id: "phone", from: cue("You used to open your phone"), draw: todo("2 · phone close-up"), bloom: [960, 540] },
-  { id: "tincan", from: cue("A conversation is supposed to go back and forth"), draw: todo("3 · tin-can telephone"), bloom: [960, 540] },
+  { id: "street", from: 0, draw: ch1Street, bloom: [960, 540] },
+  { id: "phone", from: cue("You used to open your phone"), draw: ch2Phone, bloom: [960, 500] },
+  { id: "tincan", from: cue("A conversation is supposed to go back and forth"), draw: ch3TinCan, bloom: [400, 600] },
   { id: "bedroom", from: cue("And eventually you catch yourself thinking"), draw: ch4Bedroom, bloom: [700, 600] },
   { id: "memory", from: cue("Because once you notice it"), draw: todo("5 · a golden memory"), bloom: [960, 540] },
   { id: "yeahhaha", from: cue("And now you're sitting there"), draw: todo("6 · yeah haha"), bloom: [960, 540] },

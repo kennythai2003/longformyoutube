@@ -16,6 +16,7 @@ export type Pose = {
   expr: Expr; flip?: boolean;
   /** 0 = toes forward (3/4), 1 = shoes seen from the side (walking) */ side?: number;
   /** sitting: thighs come toward the viewer, so the knee sits over the hip */ sit?: boolean;
+  /** seen from behind (walking away): no face, the hair or hood covers the head */ back?: boolean;
 };
 export type HairKind = "crop" | "long" | "bun" | "hood";
 export type TopKind = "hoodie" | "cardigan" | "jumper";
@@ -147,7 +148,7 @@ export const drawPerson = (g: Gfx, pose: Pose, L: Look, frame: number, o: { lit?
   const p = pose, blink = blinking(frame, sd);
   const shL = F([p.chest[0] - 27, p.chest[1] + 9]), shR = F([p.chest[0] + 25, p.chest[1] + 9]);
   const hipL = F([p.hip[0] - 14, p.hip[1] + 4]), hipR = F([p.hip[0] + 14, p.hip[1] + 4]);
-  const near = fx > 0 ? "R" : "L"; // the arm and leg nearer the viewer: the side the figure faces
+  const near = "R"; // poses are authored facing +x with R as the near side; a mirror (flip) keeps the depth order
   const armW = 9.2, legW = 11;
 
   // ---- legs (far first)
@@ -195,18 +196,18 @@ export const drawPerson = (g: Gfx, pose: Pose, L: Look, frame: number, o: { lit?
     g.group("ink", () => ink(g, neck, s + 10, 1.8));
     g.group("paint", () => {
       paint(g, body, L.topC, L.topShade, s, [-7, -8]);
-      if (L.top === "cardigan" && L.innerC) { const inner: P[] = [at(1.03, -10), at(0.7, -6), at(hem + 0.05, -7), at(hem + 0.05, 9), at(0.7, 8), at(1.03, 11)]; paint(g, inner, L.innerC, L.innerShade ?? L.innerC, s + 1, [-3, -3]); }
-      if (L.top === "hoodie" && L.hair !== "hood") { const hood: P[] = [at(1.0, -26), at(1.13, -22), at(1.2, 0), at(1.13, 22), at(1.0, 25), at(0.97, 0)]; paint(g, hood, L.topShade, L.topShade, s + 2, [-2, -2]); }
+      if (L.top === "cardigan" && L.innerC && !p.back) { const inner: P[] = [at(1.03, -10), at(0.7, -6), at(hem + 0.05, -7), at(hem + 0.05, 9), at(0.7, 8), at(1.03, 11)]; paint(g, inner, L.innerC, L.innerShade ?? L.innerC, s + 1, [-3, -3]); }
+      if (L.top === "hoodie" && L.hair !== "hood" && !p.back) { const hood: P[] = [at(1.0, -26), at(1.13, -22), at(1.2, 0), at(1.13, 22), at(1.0, 25), at(0.97, 0)]; paint(g, hood, L.topShade, L.topShade, s + 2, [-2, -2]); }
       if (L.top === "jumper") { const ribs: P[] = [at(hem, -33), at(hem + 0.09, -33), at(hem + 0.09, 33), at(hem, 33)]; paint(g, ribs, L.topShade, L.topShade, s + 3, [-1, -1]); }
     });
     g.group("ink", () => {
       ink(g, body, s + 4, 2.8);
-      if (L.top === "hoodie") {
+      if (L.top === "hoodie" && !p.back) {
         // kangaroo pocket and drawstrings
         ink(g, [at(0.1, -20), at(0.34, -16), at(0.36, 16), at(0.1, 21)], s + 5, 1.7, { closed: false, opacity: 0.6, retrace: false });
         if (L.hair !== "hood") { ink(g, [at(0.96, -6), at(0.8, -7), at(0.7, -6)], s + 6, 1.5, { closed: false, opacity: 0.75, retrace: false }); ink(g, [at(0.96, 7), at(0.8, 8), at(0.68, 7)], s + 7, 1.5, { closed: false, opacity: 0.75, retrace: false }); }
       }
-      if (L.top === "cardigan") { ink(g, [at(1.03, -10), at(0.7, -6), at(hem + 0.04, -7)], s + 5, 1.8, { closed: false, opacity: 0.8 }); ink(g, [at(1.03, 11), at(0.7, 8), at(hem + 0.04, 9)], s + 6, 1.8, { closed: false, opacity: 0.8 }); [0.25, 0.45, 0.65].forEach((t, i) => ink(g, oval(...at(t, -9), 1.8, 1.8, 6), s + 11 + i, 1.2, { opacity: 0.7 })); }
+      if (L.top === "cardigan" && !p.back) { ink(g, [at(1.03, -10), at(0.7, -6), at(hem + 0.04, -7)], s + 5, 1.8, { closed: false, opacity: 0.8 }); ink(g, [at(1.03, 11), at(0.7, 8), at(hem + 0.04, 9)], s + 6, 1.8, { closed: false, opacity: 0.8 }); [0.25, 0.45, 0.65].forEach((t, i) => ink(g, oval(...at(t, -9), 1.8, 1.8, 6), s + 11 + i, 1.2, { opacity: 0.7 })); }
       if (L.top === "jumper") ink(g, [at(hem + 0.09, -33), at(hem + 0.1, 0), at(hem + 0.09, 33)], s + 5, 1.5, { closed: false, opacity: 0.55, retrace: false });
       // a fold where the arm meets the body
       ink(g, [at(0.86, 24 * fx), at(0.7, 27 * fx)], s + 8, 1.4, { closed: false, opacity: 0.45, retrace: false });
@@ -219,6 +220,26 @@ export const drawPerson = (g: Gfx, pose: Pose, L: Look, frame: number, o: { lit?
     const hc = F(p.head), tilt = p.tilt * fx, s = sd + 70, R = 44;
     const H = (pts: P[]) => turn(pts.map(([x, y]) => [hc[0] + x * fx, hc[1] + y] as P), hc[0], hc[1], tilt);
     const face: P[] = [[-40, -22], [-30, -40], [-6, -46], [20, -44], [38, -30], [44, -6], [42, 16], [32, 34], [12, 44], [-6, 45], [-24, 38], [-38, 22], [-44, 0]];
+    if (p.back) {
+      // from behind: ears at both sides, then the back of the hair (or the hood) over the whole head
+      const skull = oval(0, -2, 44, 46, 12);
+      g.group("paint", () => { [-1, 1].forEach((k) => { if (L.hair !== "hood" && L.hair !== "long") paint(g, H(oval(k * 43, 6, 7, 10, 8)), L.skin, L.skinShade, s + 90 + k, [-2, -2]); }); paint(g, H(skull), L.skin, L.skinShade, s + 92); });
+      const cover: Record<HairKind, P[]> = {
+        crop: [[-46, 10], [-48, -22], [-34, -46], [-8, -54], [2, -66], [10, -52], [30, -48], [46, -26], [47, 6], [36, 22], [0, 28], [-36, 22]],
+        long: [[-50, -10], [-44, -42], [-14, -56], [16, -56], [44, -42], [52, -8], [54, 40], [52, 92], [24, 98], [0, 94], [-26, 98], [-54, 92], [-54, 40]],
+        bun: [[-46, 10], [-48, -22], [-32, -46], [0, -52], [32, -46], [48, -22], [46, 10], [32, 26], [0, 30], [-32, 26]],
+        hood: [[-58, 14], [-58, -28], [-36, -62], [4, -70], [42, -58], [60, -26], [62, 14], [54, 50], [24, 64], [-24, 64], [-52, 48]],
+      };
+      const hc2 = L.hair === "hood" ? L.topC : L.hairC, hs2 = L.hair === "hood" ? L.topShade : L.hairShade;
+      g.group("paint", () => { paint(g, H(cover[L.hair]), hc2, hs2, s + 93, [-4, -6]); if (L.hair === "bun") paint(g, H(oval(0, -60, 19, 16, 10)), L.hairC, L.hairShade, s + 94, [-3, -4]); });
+      g.group("ink", () => {
+        [-1, 1].forEach((k) => { if (L.hair !== "hood" && L.hair !== "long") ink(g, H(oval(k * 43, 6, 7, 10, 8)), s + 95 + k, 1.8); });
+        ink(g, H(cover[L.hair]), s + 97, 2.6); if (L.hair === "bun") ink(g, H(oval(0, -60, 19, 16, 10)), s + 98, 2.2);
+        if (L.hair === "hood") ink(g, H([[0, -66], [2, -20], [0, 40]]), s + 99, 1.4, { closed: false, opacity: 0.5, retrace: false });
+        if (L.hair === "long") [[-30, -30, -34, 80], [0, -40, 2, 86], [28, -30, 32, 82]].forEach(([a, b, c, d], i) => ink(g, H([[a, b], [c, d]]), s + 100 + i, 1.2, { closed: false, opacity: 0.45, retrace: false }));
+      });
+      return;
+    }
     // hair behind the head
     if (L.hair === "long") {
       const back: P[] = [[-48, -10], [-46, -40], [-20, -56], [14, -56], [42, -40], [50, -10], [52, 30], [54, 70], [50, 92], [30, 98], [8, 70], [-14, 72], [-36, 98], [-54, 92], [-56, 60], [-52, 24]];
