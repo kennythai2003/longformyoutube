@@ -5,6 +5,7 @@ import { Film } from "./film";
 import { drawCaption } from "./caption";
 import { ch1Street, ch2Phone, ch3TinCan, ch4Bedroom } from "./chapters1";
 import { ch10Busy, ch11Pattern, ch5Memory, ch6YeahHaha, ch7Interview, ch8Clouds, ch9Chess } from "./chapters2";
+import { ch12Jo, ch13Door, ch14Candle, ch15Detective, ch16Couch, ch17Polaroids } from "./chapters3";
 import { bloomPath, clipTo, cue, finishPaper, ground, newG, ramp, text, SERIF } from "./kit";
 
 const FPS = 24, BPM = 72, DURATION = 13802, BLOOM = 22;
@@ -26,12 +27,12 @@ export const CHAPTERS: Chapter[] = [
   { id: "chess", from: cue("And suddenly you're treating a casual conversation"), draw: ch9Chess, bloom: [800, 520] },
   { id: "busy", from: cue("And here's the thing"), draw: ch10Busy, bloom: [370, 370] },
   { id: "pattern", from: cue("It's the pattern that matters"), draw: ch11Pattern, bloom: [200, 400] },
-  { id: "jo", from: cue("Because when someone genuinely wants to talk to you"), draw: todo("12 · Jo reaches out"), bloom: [960, 540] },
-  { id: "door", from: cue("And unfortunately, some people won't just tell you"), draw: todo("13 · the door left open"), bloom: [960, 540] },
-  { id: "candle", from: cue("You get one good conversation"), draw: todo("14 · the candle"), bloom: [960, 540] },
-  { id: "detective", from: cue("You have to stop looking at the occasional"), draw: todo("15 · the detective"), bloom: [960, 540] },
-  { id: "couch", from: cue("People who want to talk to you can still be busy"), draw: todo("16 · the couch"), bloom: [960, 540] },
-  { id: "polaroids", from: cue("And this is where you need to be honest"), draw: todo("17 · polaroids"), bloom: [960, 540] },
+  { id: "jo", from: cue("Because when someone genuinely wants to talk to you"), draw: ch12Jo, bloom: [960, 500] },
+  { id: "door", from: cue("And unfortunately, some people won't just tell you"), draw: ch13Door, bloom: [960, 420] },
+  { id: "candle", from: cue("You get one good conversation"), draw: ch14Candle, bloom: [960, 600] },
+  { id: "detective", from: cue("You have to stop looking at the occasional"), draw: ch15Detective, bloom: [420, 300] },
+  { id: "couch", from: cue("People who want to talk to you can still be busy"), draw: ch16Couch, bloom: [800, 600] },
+  { id: "polaroids", from: cue("And this is where you need to be honest"), draw: ch17Polaroids, bloom: [330, 300] },
   { id: "watering", from: cue("And because you remember that version"), draw: todo("18 · watering the dead plant"), bloom: [960, 540] },
   { id: "facedown", from: cue("So stop trying"), draw: todo("19 · face-down"), bloom: [960, 540] },
   { id: "picnic", from: cue("The people who genuinely want to be in your life"), draw: todo("20 · the picnic"), bloom: [960, 540] },

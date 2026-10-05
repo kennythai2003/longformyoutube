@@ -33,7 +33,7 @@ export const drawPhone = (g: Gfx, ctx: Ctx, env: Env, f: number, o: PhoneOpts) =
   // ---- messages (bottom-up), scrolled so the newest sits above the input bar
   const shown = o.msgs.filter((m) => f >= m.at);
   const sizes = shown.map((m) => { const lines = wrap(ctx, m.text, 270); const w = Math.max(...lines.map((l) => measure(ctx, l, UI(FONT)))) + 44, h = lines.length * LINE + 26; return { m, lines, w, h }; });
-  const gap = 18, bottom = SH / 2 - INPUT - 18; let y = bottom;
+  const gap = 18, bottom = SH / 2 - INPUT - 18 - smooth(clamp(o.typing ?? 0)) * 70; let y = bottom;
   const placed = sizes.slice().reverse().map((s) => { const grow = smooth(clamp((f - s.m.at) / 8)); const h = (s.h + gap) * grow; const cy = y - s.h / 2; y -= h; return { ...s, cy, k: pop(f, s.m.at, 10) }; });
   const visible = placed.filter((p) => p.cy + p.h / 2 > TOP + HEAD - 40);
   const bx = (p: (typeof placed)[number]) => (p.m.side === "me" ? SW / 2 - 22 - p.w / 2 : -SW / 2 + 22 + p.w / 2);
@@ -46,7 +46,7 @@ export const drawPhone = (g: Gfx, ctx: Ctx, env: Env, f: number, o: PhoneOpts) =
     // "Read" under the last of my messages
     const last = placed[0]; if (last && last.m.side === "me" && last.m.read !== undefined && f >= last.m.read) g.group("plain", () => { const c = g.cur; c.font = UI(20); c.fillStyle = "#8a8794"; c.textAlign = "right"; c.globalAlpha = smooth((f - last.m.read!) / 8); c.fillText("Read", SW / 2 - 26, last.cy + last.h / 2 + 18); c.globalAlpha = 1; g.touch(0, last.cy, SW / 2, last.cy + last.h); });
     // typing dots in a grey bubble on their side
-    if ((o.typing ?? 0) > 0.01) { const ty = bottom - 30; g.group("plain", () => { g.push(-SW / 2 + 70, ty, 1); g.form(softBox(0, 0, 100, 52, 4, 20), BUBBLE.them, BUBBLE.themShade, { seed: 80 }); g.pop(); const c = g.cur; for (let i = 0; i < 3; i++) { const b = Math.max(0, Math.sin(f * 0.3 - i * 0.9)); c.fillStyle = "#77737f"; c.globalAlpha = 0.5 + 0.5 * b; c.beginPath(); c.arc(-SW / 2 + 70 + (i - 1) * 22, ty - b * 5, 7, 0, Math.PI * 2); c.fill(); } c.globalAlpha = 1; g.touch(-SW / 2, ty - 40, 0, ty + 40); }, { alpha: o.typing }); }
+    if ((o.typing ?? 0) > 0.01) { const ty = bottom + 44; g.group("plain", () => { g.push(-SW / 2 + 70, ty, 1); g.form(softBox(0, 0, 100, 52, 4, 20), BUBBLE.them, BUBBLE.themShade, { seed: 80 }); g.pop(); const c = g.cur; for (let i = 0; i < 3; i++) { const b = Math.max(0, Math.sin(f * 0.3 - i * 0.9)); c.fillStyle = "#77737f"; c.globalAlpha = 0.5 + 0.5 * b; c.beginPath(); c.arc(-SW / 2 + 70 + (i - 1) * 22, ty - b * 5, 7, 0, Math.PI * 2); c.fill(); } c.globalAlpha = 1; g.touch(-SW / 2, ty - 40, 0, ty + 40); }, { alpha: o.typing }); }
   }
   // ---- header and input bar, over the scrolled messages
   g.group("plain", () => {
