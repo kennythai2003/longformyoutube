@@ -4,6 +4,7 @@ import { Ctx, Env } from "./core";
 import { Film } from "./film";
 import { drawCaption } from "./caption";
 import { ch1Street, ch2Phone, ch3TinCan, ch4Bedroom } from "./chapters1";
+import { ch10Busy, ch11Pattern, ch5Memory, ch6YeahHaha, ch7Interview, ch8Clouds, ch9Chess } from "./chapters2";
 import { bloomPath, clipTo, cue, finishPaper, ground, newG, ramp, text, SERIF } from "./kit";
 
 const FPS = 24, BPM = 72, DURATION = 13802, BLOOM = 22;
@@ -18,13 +19,13 @@ export const CHAPTERS: Chapter[] = [
   { id: "phone", from: cue("You used to open your phone"), draw: ch2Phone, bloom: [960, 500] },
   { id: "tincan", from: cue("A conversation is supposed to go back and forth"), draw: ch3TinCan, bloom: [400, 600] },
   { id: "bedroom", from: cue("And eventually you catch yourself thinking"), draw: ch4Bedroom, bloom: [700, 600] },
-  { id: "memory", from: cue("Because once you notice it"), draw: todo("5 · a golden memory"), bloom: [960, 540] },
-  { id: "yeahhaha", from: cue("And now you're sitting there"), draw: todo("6 · yeah haha"), bloom: [960, 540] },
-  { id: "interview", from: cue("And somehow you're now three questions deep"), draw: todo("7 · the interview"), bloom: [960, 540] },
-  { id: "clouds", from: cue("At some point, you have to stop blaming yourself"), draw: todo("8 · thought clouds"), bloom: [960, 540] },
-  { id: "chess", from: cue("And suddenly you're treating a casual conversation"), draw: todo("9 · the chess match"), bloom: [960, 540] },
-  { id: "busy", from: cue("And here's the thing"), draw: todo("10 · people get busy"), bloom: [960, 540] },
-  { id: "pattern", from: cue("It's the pattern that matters"), draw: todo("11 · the pattern"), bloom: [960, 540] },
+  { id: "memory", from: cue("Because once you notice it"), draw: ch5Memory, bloom: [560, 460] },
+  { id: "yeahhaha", from: cue("And now you're sitting there"), draw: ch6YeahHaha, bloom: [960, 500] },
+  { id: "interview", from: cue("And somehow you're now three questions deep"), draw: ch7Interview, bloom: [760, 300] },
+  { id: "clouds", from: cue("At some point, you have to stop blaming yourself"), draw: ch8Clouds, bloom: [700, 500] },
+  { id: "chess", from: cue("And suddenly you're treating a casual conversation"), draw: ch9Chess, bloom: [800, 520] },
+  { id: "busy", from: cue("And here's the thing"), draw: ch10Busy, bloom: [370, 370] },
+  { id: "pattern", from: cue("It's the pattern that matters"), draw: ch11Pattern, bloom: [200, 400] },
   { id: "jo", from: cue("Because when someone genuinely wants to talk to you"), draw: todo("12 · Jo reaches out"), bloom: [960, 540] },
   { id: "door", from: cue("And unfortunately, some people won't just tell you"), draw: todo("13 · the door left open"), bloom: [960, 540] },
   { id: "candle", from: cue("You get one good conversation"), draw: todo("14 · the candle"), bloom: [960, 540] },
