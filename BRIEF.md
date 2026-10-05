@@ -50,10 +50,10 @@ Every character is drawn by one rig (`person.ts`). These traits never change bet
 4. olive trousers
 5. sits cross-legged, reads Sam's phone with a raised eyebrow
 
-**"them"** *(the person who stopped talking; same as last film)*
-1. lilac hoodie, hood up
-2. **never shows a face**: always at a distance, turned away or cropped
-3. always looking at their own phone
+**"them"** *(the person who stopped talking)*
+1. lilac hoodie, hood up, the rim framing the face
+2. **a face this time** (the person: *"the purple hoodie person doesnt have a face at all"*): a dark fringe under the hood, a flat, distracted mouth
+3. always looking down at their own phone
 
 ## Chapter table
 
@@ -84,9 +84,13 @@ Each chapter starts on a script line (a `cue()` prefix) and says what changes in
 | 21 | "So if you're currently staring at a chat" | 8:38 | **Put the phone down** | Sam sets the phone on the sill and goes out; the silence sits in the empty room |
 | 22 | "So stop watering the dead plant" | 9:11 | **Dawn** | the watering can is set down; the seedling sits where the dead plant was; Sam walks out the door into the morning |
 
+## Props
+
+Nobody sits on nothing (the person's note on the model sheet): every seated pose sits on a real thing, such as the bed, a chair, the couch or the picnic blanket.
+
 ## Approval gates
 
-1. **One look frame**: Sam in the bedroom at night with the plant and a caption (chapter 4).
+1. **One look frame**: Sam in the bedroom at night with the plant and a caption (chapter 4). *Approved: "looks good", with two fixes (seats; a face for "them"), both done.*
 2. **The full film.**
 
 That's all.

@@ -2,7 +2,7 @@
 import { Ctx, Env } from "./core";
 import { Film } from "./film";
 import { finishPaper, ground, newG, text, SERIF } from "./kit";
-import { JO, Look, Pose, RAE, SAM, THEM, breathe, drawPerson, footShadow, sitCross, sitPhone, stand, standChin, standPhone, standPour, walk } from "./person";
+import { JO, Look, Pose, RAE, SAM, THEM, breathe, drawChair, drawCushion, drawPerson, footShadow, sitCross, sitPhone, stand, standChin, standPhone, standPour, walk } from "./person";
 
 const CAST: Look[] = [SAM, JO, RAE, THEM];
 const POSES: [string, (f: number) => Pose][] = [
@@ -15,7 +15,7 @@ const draw = (ctx: Ctx, f: number, env: Env) => {
   const colW = env.W / POSES.length, rowH = env.H / CAST.length;
   CAST.forEach((L, r) => POSES.forEach(([name, pose], c) => {
     const x = colW * (c + 0.5), y = rowH * (r + 1) - 22, s = (rowH - 40) / 320;
-    g.push(x, y, s); footShadow(g, 50); drawPerson(g, breathe(pose(f), f, L.seed), L, f); g.pop();
+    g.push(x, y, s); footShadow(g, 50); if (name === "sitPhone") drawChair(g); if (name === "sitCross") drawCushion(g); drawPerson(g, breathe(pose(f), f, L.seed), L, f); g.pop();
     if (r === 0) text(ctx, env, name, x, 14, { font: SERIF(16) });
   }));
   CAST.forEach((L, r) => text(ctx, env, L.name, 30, rowH * (r + 0.5), { font: SERIF(20) }));

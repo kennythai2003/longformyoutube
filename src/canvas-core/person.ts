@@ -26,7 +26,7 @@ export type Look = {
   top: TopKind; topC: string; topShade: string; innerC?: string; innerShade?: string;
   legs: string; legsShade: string; shoes: string; shoesShade: string;
   sockL?: string; sockR?: string;
-  glasses?: boolean; faceless?: boolean; earrings?: string; tote?: boolean;
+  glasses?: boolean; earrings?: string; tote?: boolean;
 };
 
 // ---------------------------------------------------------------- the cast (BRIEF.md: these never change)
@@ -50,9 +50,9 @@ export const RAE: Look = {
 };
 export const THEM: Look = {
   name: "them", seed: 400, skin: "#e8c8b0", skinShade: "#c9a48a", blush: "#e9a0a0",
-  hair: "hood", hairC: "#c3aedd", hairShade: "#8f7bab",
+  hair: "hood", hairC: "#4a3a35", hairShade: "#2c221f",
   top: "hoodie", topC: "#c3aedd", topShade: "#8f7bab",
-  legs: "#57536a", legsShade: "#3b384a", shoes: "#ece8f0", shoesShade: "#bdb6c6", faceless: true,
+  legs: "#57536a", legsShade: "#3b384a", shoes: "#ece8f0", shoesShade: "#bdb6c6", 
 };
 
 // ---------------------------------------------------------------- pose library
@@ -225,18 +225,16 @@ export const drawPerson = (g: Gfx, pose: Pose, L: Look, frame: number, o: { lit?
       g.group("paint", () => paint(g, H(back), L.hairC, L.hairShade, s, [-4, -6]));
       g.group("ink", () => { ink(g, H(back), s + 1, 2.4); [[-44, 30, -46, 86], [44, 30, 46, 84], [-30, 50, -32, 92]].forEach(([a, b, c, d], i) => ink(g, H([[a, b], [c, d]]), s + 40 + i, 1.3, { closed: false, opacity: 0.45, retrace: false })); });
     }
+    // a hood: its back sits behind the head; its rim frames the face (drawn after the features, below)
     if (L.hair === "hood") {
-      const hood: P[] = [[-56, 10], [-54, -30], [-30, -60], [6, -66], [40, -54], [58, -24], [60, 14], [52, 44], [30, 54], [-20, 54], [-48, 40]];
+      const hood: P[] = [[-58, 14], [-58, -28], [-36, -62], [4, -70], [42, -58], [60, -26], [62, 14], [54, 46], [26, 58], [-24, 58], [-50, 44]];
       g.group("paint", () => paint(g, H(hood), L.topC, L.topShade, s, [-5, -6]));
-      const opening: P[] = [[-30, -6], [-20, -34], [6, -40], [32, -30], [42, -4], [38, 26], [20, 40], [-6, 42], [-26, 30]];
-      g.group("paint", () => g.form(H(opening.map(([x, y]) => [x + 6, y + 2] as P)), "#4e4560", "#2f2a3c", { seed: s + 2, light: [3, 4] }));
-      g.group("ink", () => { ink(g, H(hood), s + 3, 2.8); ink(g, H(opening.map(([x, y]) => [x + 6, y + 2] as P)), s + 4, 2); });
-      return;
+      g.group("ink", () => ink(g, H(hood), s + 3, 2.8));
     }
     // ear on the far side of the face, then the face
-    const ear: P[] = oval(-42, 6, 8, 11, 8);
-    g.group("paint", () => { paint(g, H(ear), L.skin, L.skinShade, s + 5, [-2, -2]); paint(g, H(face), L.skin, L.skinShade, s + 6, [-7, -8]); });
-    g.group("ink", () => { ink(g, H(ear), s + 7, 2); ink(g, H(arc(-42, 6, 4, 6, -1.2, 1.4, 5)), s + 8, 1.3, { closed: false, opacity: 0.6, retrace: false }); ink(g, H(face), s + 9, 3); });
+    const ear: P[] = oval(-42, 6, 8, 11, 8), hooded = L.hair === "hood";
+    g.group("paint", () => { if (!hooded) paint(g, H(ear), L.skin, L.skinShade, s + 5, [-2, -2]); paint(g, H(face), L.skin, L.skinShade, s + 6, [-7, -8]); });
+    g.group("ink", () => { if (!hooded) { ink(g, H(ear), s + 7, 2); ink(g, H(arc(-42, 6, 4, 6, -1.2, 1.4, 5)), s + 8, 1.3, { closed: false, opacity: 0.6, retrace: false }); } ink(g, H(face), s + 9, 3); });
     if (L.earrings) g.group("paint", () => paint(g, H(oval(-41, 22, 3, 3, 6)), L.earrings!, "#b8902a", s + 10, [-1, -1]));
     // features: shifted toward the facing side (3/4 view)
     const e = p.expr, lk = e.look, fo: P = [9 + lk[0], 4 + lk[1]], T = (pts: P[]) => H(pts.map(([x, y]) => [x + fo[0], y + fo[1]] as P));
@@ -293,12 +291,34 @@ export const drawPerson = (g: Gfx, pose: Pose, L: Look, frame: number, o: { lit?
       g.group("paint", () => { paint(g, H(bun), L.hairC, L.hairShade, s + 60, [-3, -4]); paint(g, H(cap), L.hairC, L.hairShade, s + 61, [-4, -6]); });
       g.group("ink", () => { ink(g, H(bun), s + 62, 2.3); ink(g, H(cap), s + 63, 2.4); ink(g, H(arc(-2, -66, 11, 9, 3.6, 5.6, 5)), s + 64, 1.2, { closed: false, opacity: 0.5, retrace: false }); ink(g, H([[-30, -36], [-10, -44], [14, -42]]), s + 65, 1.2, { closed: false, opacity: 0.45, retrace: false }); });
     }
+    if (L.hair === "hood") {
+      // a dark fringe peeking out, then the hood's rim around the face
+      const fringe: P[] = [[-40, -12], [-38, -32], [-20, -44], [6, -46], [30, -40], [42, -22], [40, -10], [30, -22], [18, -18], [6, -26], [-6, -18], [-20, -26], [-30, -14]];
+      const rim = tube(arc(2, 2, 49, 50, Math.PI * 0.82, Math.PI * 2.18, 12), 8.5, 8.5, false);
+      g.group("paint", () => { paint(g, H(fringe), L.hairC, L.hairShade, s + 70, [-3, -4]); paint(g, H(rim), L.topC, L.topShade, s + 71, [-4, -5]); });
+      g.group("ink", () => { ink(g, H(fringe), s + 72, 2.2); ink(g, H(rim), s + 73, 2.6); });
+    }
   };
 
   // paint order: far arm, far leg, near leg, torso, head, near arm
   const far = near === "R" ? "L" : "R";
   if (p.sit) { arm(far); leg(far); torso(); leg(near); head(); arm(near); }
   else { arm(far); leg(far); leg(near); torso(); head(); arm(near); }
+};
+
+/** a plain wooden chair under a seated figure (local units: feet at y = 0, seat top at y = -96); draw it BEFORE the figure */
+export const drawChair = (g: Gfx, seed = 900, wood = "#a97c5f", woodSh = "#7a5644") => {
+  const seat: P[] = [[-46, -100], [44, -100], [48, -88], [-50, -88]].flatMap((a, i, c) => { const b = c[(i + 1) % 4]; return [0, 1, 2, 3].map((k) => [a[0] + ((b[0] - a[0]) * k) / 4, a[1] + ((b[1] - a[1]) * k) / 4] as P); });
+  const back: P[] = [[-50, -96], [-50, -210], [-36, -214], [-36, -96]];
+  const legs: P[][] = [[[-44, -88], [-46, 0]], [[40, -88], [44, 0]], [[-30, -88], [-28, -12]], [[26, -88], [28, -12]]];
+  g.group("paint", () => { g.form(openPts(back, 4), wood, woodSh, { seed, light: [-3, -4] }); legs.forEach((l, i) => g.form(tube(l, 4.5, 4.5, false), woodSh, woodSh, { seed: seed + 1 + i })); g.form(seat, wood, woodSh, { seed: seed + 6, light: [-3, -4] }); });
+  g.group("ink", () => { ink(g, openPts(back, 4), seed + 7, 2.4); legs.forEach((l, i) => ink(g, tube(l, 4.5, 4.5, false), seed + 8 + i, 2)); ink(g, seat, seed + 12, 2.4); ink(g, [[-50, -150], [-36, -150]], seed + 13, 1.6, { closed: false, opacity: 0.6 }); });
+};
+/** a floor cushion under a cross-legged figure */
+export const drawCushion = (g: Gfx, color = "#d98f7a", shade = "#a8665a", seed = 950) => {
+  const c = oval(0, -10, 78, 18, 14);
+  g.group("paint", () => g.form(c, color, shade, { seed, light: [-4, -4] }));
+  g.group("ink", () => { ink(g, c, seed + 1, 2.4); ink(g, arc(0, -10, 60, 10, 0.15, Math.PI - 0.15, 6), seed + 2, 1.3, { closed: false, opacity: 0.5 }); });
 };
 
 /** a soft cast shadow under the feet */
