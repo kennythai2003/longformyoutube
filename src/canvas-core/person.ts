@@ -18,7 +18,7 @@ export type Pose = {
   /** sitting: thighs come toward the viewer, so the knee sits over the hip */ sit?: boolean;
   /** seen from behind (walking away): no face, the hair or hood covers the head */ back?: boolean;
 };
-export type HairKind = "crop" | "long" | "bun" | "hood";
+export type HairKind = "crop" | "long" | "bun" | "hood" | "curly";
 export type TopKind = "hoodie" | "cardigan" | "jumper";
 export type Look = {
   name: string; seed: number;
@@ -54,6 +54,21 @@ export const THEM: Look = {
   hair: "hood", hairC: "#4a3a35", hairShade: "#2c221f",
   top: "hoodie", topC: "#c3aedd", topShade: "#8f7bab",
   legs: "#57536a", legsShade: "#3b384a", shoes: "#ece8f0", shoesShade: "#bdb6c6", 
+};
+
+/** a cap of tight curls: bumps all round the top of the head (and down the back when `full`) */
+const curlyCap = (full: boolean): P[] => {
+  const pts: P[] = [], a0 = full ? -0.15 : 0.05, a1 = full ? Math.PI + 0.15 : Math.PI - 0.05, n = 13;
+  for (let i = 0; i <= n; i++) { const a = Math.PI + a0 + ((a1 - a0) * i) / n, r = 56 + (i % 2 ? 7 : 0); pts.push([Math.cos(a) * r, -6 + Math.sin(a) * r * 1.02]); }
+  if (full) pts.push([50, 24], [20, 34], [-20, 34], [-50, 24]);
+  else pts.push([46, -6], [34, -22], [12, -28], [-12, -26], [-34, -20], [-46, -4]);
+  return pts;
+};
+export const KAI: Look = {
+  name: "Kai", seed: 500, skin: "#c99573", skinShade: "#a6714f", blush: "#e38a7a",
+  hair: "curly", hairC: "#2e2422", hairShade: "#1a1413",
+  top: "jumper", topC: "#7cb3aa", topShade: "#538a82",
+  legs: "#c9b58f", legsShade: "#a08c66", shoes: "#ece6dc", shoesShade: "#c2b9aa",
 };
 
 // ---------------------------------------------------------------- pose library
@@ -228,6 +243,7 @@ export const drawPerson = (g: Gfx, pose: Pose, L: Look, frame: number, o: { lit?
         crop: [[-46, 10], [-48, -22], [-34, -46], [-8, -54], [2, -66], [10, -52], [30, -48], [46, -26], [47, 6], [36, 22], [0, 28], [-36, 22]],
         long: [[-50, -10], [-44, -42], [-14, -56], [16, -56], [44, -42], [52, -8], [54, 40], [52, 92], [24, 98], [0, 94], [-26, 98], [-54, 92], [-54, 40]],
         bun: [[-46, 10], [-48, -22], [-32, -46], [0, -52], [32, -46], [48, -22], [46, 10], [32, 26], [0, 30], [-32, 26]],
+        curly: curlyCap(true),
         hood: [[-58, 14], [-58, -28], [-36, -62], [4, -70], [42, -58], [60, -26], [62, 14], [54, 50], [24, 64], [-24, 64], [-52, 48]],
       };
       const hc2 = L.hair === "hood" ? L.topC : L.hairC, hs2 = L.hair === "hood" ? L.topShade : L.hairShade;
@@ -305,6 +321,11 @@ export const drawPerson = (g: Gfx, pose: Pose, L: Look, frame: number, o: { lit?
       const rt: P[] = [[4, -52], [22, -50], [40, -38], [48, -14], [50, 22], [48, 52], [40, 60], [38, 30], [36, 0], [26, -26], [8, -38]];
       g.group("paint", () => { paint(g, H(lf), L.hairC, L.hairShade, s + 61, [-4, -6]); paint(g, H(rt), L.hairC, L.hairShade, s + 62, [-4, -6]); });
       g.group("ink", () => { ink(g, H(lf), s + 63, 2.3); ink(g, H(rt), s + 64, 2.3); ink(g, H([[-20, -44], [-36, -10], [-40, 40]]), s + 65, 1.2, { closed: false, opacity: 0.45, retrace: false }); ink(g, H([[24, -42], [42, -6], [44, 40]]), s + 66, 1.2, { closed: false, opacity: 0.45, retrace: false }); });
+    }
+    if (L.hair === "curly") {
+      const cap = curlyCap(false);
+      g.group("paint", () => paint(g, H(cap), L.hairC, L.hairShade, s + 61, [-4, -6]));
+      g.group("ink", () => { ink(g, H(cap), s + 62, 2.4); [[-24, -40], [4, -48], [28, -38], [-38, -18]].forEach(([x, y], i) => ink(g, H(arc(x, y, 7, 6, 3.4, 5.9, 5)), s + 63 + i, 1.2, { closed: false, opacity: 0.5, retrace: false })); });
     }
     if (L.hair === "bun") {
       const cap: P[] = [[-46, 6], [-48, -22], [-34, -46], [-6, -54], [24, -50], [44, -32], [48, -10], [40, -24], [20, -34], [-4, -34], [-26, -28], [-40, -12]];

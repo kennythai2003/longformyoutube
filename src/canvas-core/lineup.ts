@@ -2,9 +2,9 @@
 import { Ctx, Env } from "./core";
 import { Film } from "./film";
 import { finishPaper, ground, newG, text, SERIF } from "./kit";
-import { JO, Look, Pose, RAE, SAM, THEM, breathe, drawChair, drawCushion, drawPerson, footShadow, sitCross, sitPhone, stand, standChin, standPhone, standPour, walk } from "./person";
+import { JO, KAI, Look, Pose, RAE, SAM, breathe, drawChair, drawCushion, drawPerson, footShadow, sitCross, sitPhone, stand, standChin, standPhone, standPour, walk } from "./person";
 
-const CAST: Look[] = [SAM, JO, RAE, THEM];
+const CAST: Look[] = [SAM, JO, RAE, KAI];
 const POSES: [string, (f: number) => Pose][] = [
   ["stand", () => stand()], ["walk 0", () => walk(0)], ["walk .25", () => walk(0.25)], ["sitPhone", () => sitPhone()],
   ["sitCross", () => sitCross()], ["standChin", () => standChin()], ["standPour", () => standPour()], ["standPhone", () => standPhone()],

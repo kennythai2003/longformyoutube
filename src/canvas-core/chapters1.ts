@@ -3,10 +3,10 @@ import { PALS, PLANT_AT, drawBedroom } from "./bedroom";
 import { cloud, cue, glowAt, lerp, newG, pop, ramp, smooth } from "./kit";
 import { SAM, breathe, drawPerson, footShadow, mixPose, sitPhone, stand, standPour, withExpr } from "./person";
 import { drawPlant } from "./plant";
-import { GRAPHITE, P, oval, softBox, heart } from "./core";
+import { GRAPHITE, P, oval, softBox, heart, tube } from "./core";
 import { Gfx } from "./core";
 import { BUBBLE, blit, bubble, clamp, ground, lerpP, lin, UI, gText, polyPts, typingDots, wob } from "./kit";
-import { THEM, Pose, standPhone, walk } from "./person";
+import { JO, Pose, standPhone, walk } from "./person";
 import { duskSet, streetSet, W as Wash, ink as inkS } from "./sets";
 import { drawPhone, Msg } from "./phone";
 // Chapters, one function per scene: (ctx, frame, env), frame = the FILM's frame so events fire on cue().
@@ -48,23 +48,36 @@ export const ch1Street = (ctx: Ctx, f: number, env: Env) => {
   blit(ctx, streetSet(env));
   const g = newG(ctx, env, f);
   // them, across the road, on their phone; never looks up
-  const tp = breathe(withExpr(standPhone(), { eyes: "down", mouth: "flat" }), f, THEM.seed);
-  g.push(1330, 592, 0.72); footShadow(g, 50, 0.25); drawPerson(g, { ...tp, flip: true }, THEM, f); g.pop();
+  const tp = breathe(withExpr(standPhone(), { eyes: "down", mouth: "flat" }), f, JO.seed);
+  g.push(1330, 592, 0.72); footShadow(g, 50, 0.25); drawPerson(g, { ...tp, flip: true }, JO, f); g.pop();
   tag(g, 1330, 340, "Seen", pop(f, tNotice + 6, 10), 1 - ramp(f, tDiff + 30, tDiff + 44));
   const dots = pop(f, tNotice + 34, 8) * (1 - ramp(f, tNotice + 64, tNotice + 72));
   if (dots > 0) { tag(g, 1420, 300, "   ", dots); typingDots(g, f, 1420, 300, 0.7); }
   // Sam walks left to right with the sack; it gets heavier
   const heavy = ramp(f, tDiff, tDiff + 30), ph = (f / tEnd) * 5.4, x = 120 + (f / tEnd) * 980;
   let p: Pose = walk(ph, { mouth: "flat", brows: -0.2 - heavy * 0.4, eyes: "open", look: [3, 1] });
-  p = { ...p, chest: [p.chest[0] + 6 + heavy * 8, p.chest[1] + heavy * 6], head: [p.head[0] + 9 + heavy * 10, p.head[1] + heavy * 10], elbowR: [p.chest[0] + 26, p.chest[1] + 22], wristR: [p.chest[0] - 2, p.chest[1] - 6], handR: "rest" };
   const S = 1.42, swing = Math.sin(ph * Math.PI * 4) * 0.035;
+  // the sack: an empty speech bubble slung over the shoulder, behind the back; its tail runs forward over
+  // the shoulder into Sam's fist, so the hand is really holding it
+  const sk: P = [-70, -232 + heavy * 22], rot = -0.36 + swing - heavy * 0.1;
+  const W2 = (q: P): P => [sk[0] + q[0] * Math.cos(rot) - q[1] * Math.sin(rot), sk[1] + q[0] * Math.sin(rot) + q[1] * Math.cos(rot)];
+  // the sack's twisted neck runs from the bubble's corner, over the shoulder, into Sam's fist at the chest
+  const grip: P = [p.chest[0] + 26, p.chest[1] + 44], over: P = [p.chest[0] - 6, p.chest[1] + 10], from: P = [p.chest[0] - 40, p.chest[1] + 2];
+  p = { ...p, chest: [p.chest[0] + 6 + heavy * 8, p.chest[1] + heavy * 6], head: [p.head[0] + 9 + heavy * 10, p.head[1] + heavy * 10], elbowR: [p.chest[0] + 34, p.chest[1] + 66], wristR: [grip[0] + 4, grip[1] + 2], handR: "rest" };
   g.push(x, 882, S); footShadow(g, 60, 0.3);
-  // the sack: an empty speech bubble slung over the shoulder, behind the back
-  g.push(-62, -238 + heavy * 22, 1, -0.32 + swing - heavy * 0.12);
-  bubble(g, 0, 0, 190, 132, { fill: "#fbf7ef", shade: "#cfc4b2", tail: "r", seed: 81 });
-  g.group("ink", () => { g.pen(softBox(0, 0, 196, 138, 4.2, 22), { closed: true, w: 3.2, seed: 82, wobble: 0.4, opacity: 0.8 }); [-30, 0, 30].forEach((x, i) => g.pen(oval(x, 0, 5, 5, 6), { closed: true, w: 3, seed: 83 + i, opacity: 0.35, retrace: false })); });
+  g.push(sk[0], sk[1], 1, rot);
+  bubble(g, 0, 0, 190, 132, { fill: "#fbf7ef", shade: "#cfc4b2", tail: "none", seed: 81 });
+  g.group("ink", () => { [-30, 0, 30].forEach((x, i) => g.pen(oval(x, 4, 5, 5, 6), { closed: true, w: 3, seed: 83 + i, opacity: 0.35, retrace: false })); });
   g.pop();
-  drawPerson(g, p, SAM, f); g.pop();
+  drawPerson(g, p, SAM, f);
+  // the neck goes over the shoulder, in front of the hoodie; the fist closes on it
+  const neck = tube([from, over, grip], 8, 6, false); void W2;
+  g.group("paint", () => g.form(neck, "#fbf7ef", "#cfc4b2", { seed: 86, light: [-2, -3] }));
+  g.group("ink", () => { g.pen(neck, { closed: true, w: 2.2, seed: 87, wobble: 0.3, opacity: 0.85 }); [0.35, 0.7].forEach((t, i) => { const a = lerpP(from, over, t); g.pen([[a[0] - 5, a[1] - 6], [a[0] + 5, a[1] + 6]], { w: 1.3, seed: 88 + i, opacity: 0.45, retrace: false }); }); });
+  const fist = oval(grip[0] + 2, grip[1] + 2, 9, 8, 10);
+  g.group("paint", () => g.form(fist, SAM.skin, SAM.skinShade, { seed: 90, light: [-2, -2] }));
+  g.group("ink", () => { g.pen(fist, { closed: true, w: 1.8, seed: 91, wobble: 0.3 }); [-3, 1, 5].forEach((d, i) => g.pen([[grip[0] + 6, grip[1] + d - 2], [grip[0] + 10, grip[1] + d - 1]], { w: 1, seed: 92 + i, opacity: 0.6, retrace: false })); });
+  g.pop();
 };
 
 // ---------------------------------------------------------------- 2. the phone close-up: their name, then the dry chat
@@ -86,7 +99,7 @@ export const ch2Phone = (ctx: Ctx, f: number, env: Env) => {
   g.group("plain", () => { Wash(g, oval(960, 540, 1100, 600, 14), cool > 0.5 ? "#b7bfd6" : "#f2d3a8", 1, 0.7, false); Wash(g, oval(400, 900, 600, 260, 12), "#d9b8a8", 2, 0.4, false); }, { blur: 60 });
   const msgs: Msg[] = [...HISTORY, { side: "me", text: "also!!", at: t3 + 4 }, { side: "me", text: "oh and remember that place?", at: t3 + 22 }, { side: "me", text: "the one with the noodles", at: t3 + 40 }, { side: "me", text: "anyway", at: t4 + 10, read: t5 }];
   const draft = f < t2 ? typed(f, t1 + 26, ["so what are you up to", "did you", "hey"]) : f >= t4 + 30 && f < t5 ? typed(f, t4 + 30, ["haha"]) : "";
-  drawPhone(g, ctx, env, f, { cx: 960 + wob(f, 3, 0.02) * 6, cy: 500 + wob(f, 5, 0.02) * 5, k: 0.86, tilt: -3 + wob(f, 7, 0.015) * 1.2, title: "them", avatar: "#c3aedd", msgs, draft, caret: f >= t1 + 14, lock: 1 - cool, lockFrom: t0 + 8, lockText: "omg you HAVE to see this", warm: 1 - cool });
+  drawPhone(g, ctx, env, f, { cx: 960 + wob(f, 3, 0.02) * 6, cy: 500 + wob(f, 5, 0.02) * 5, k: 0.86, tilt: -3 + wob(f, 7, 0.015) * 1.2, title: "Jo", avatar: "#8aa6c9", msgs, draft, caret: f >= t1 + 14, lock: 1 - cool, lockFrom: t0 + 8, lockText: "omg you HAVE to see this", warm: 1 - cool });
 };
 
 // ---------------------------------------------------------------- 3. the tin-can telephone at dusk
@@ -121,12 +134,12 @@ export const ch3TinCan = (ctx: Ctx, f: number, env: Env) => {
   const canS: P = [sx + 74 * S, sy - 232 * S];
   const themHold: Pose = withExpr({ ...stand(), elbowR: [38, -178], wristR: [56, -226], handR: "hold" }, { mouth: "smile", look: [4, -2] });
   const themPhone = withExpr(standPhone(), { eyes: "down", mouth: "flat" });
-  const tPose = breathe(mixPose(themHold, { ...themPhone, elbowL: [-30, -150], wristL: [-34, -112] }, ramp(f, tOut, tOut + 20)), f, THEM.seed);
+  const tPose = breathe(mixPose(themHold, { ...themPhone, elbowL: [-30, -150], wristL: [-34, -112] }, ramp(f, tOut, tOut + 20)), f, JO.seed);
   const canT: P = lerpP([tx - 74 * T, ty - 232 * T], [tx + 36 * T, ty - 112 * T], ramp(f, tOut, tOut + 20));
   const canTend: P = lerpP(canT, [tx + 50, ty + 6], gone);
   // the string: taut while both talk, sagging once they check out
   const sag = 12 + slack * 230 + gone * 40, at = (t: number): P => { const a = lerpP(canS, canTend, t); return [a[0], a[1] + sag * 4 * t * (1 - t)]; };
-  g.push(tx, ty, T); footShadow(g, 56, 0.25); drawPerson(g, { ...tPose, flip: true }, THEM, f); g.pop();
+  g.push(tx, ty, T); footShadow(g, 56, 0.25); drawPerson(g, { ...tPose, flip: true }, JO, f); g.pop();
   can(g, canTend, Math.PI * (1 - gone * 0.5), 300);
   g.group("ink", () => g.pen(Array.from({ length: 13 }, (_, i) => at(i / 12)), { w: 2, color: "#7a6a5e", seed: 310, wobble: 0.2, boil: 0.3, taper: 0, opacity: 0.9 * (1 - gone * 0.6), retrace: false }));
   // words travelling both ways while the line is alive

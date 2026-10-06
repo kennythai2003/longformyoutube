@@ -3,7 +3,7 @@
 import { Ctx, Env, GRAPHITE, Gfx, P, heart, oval, rng, softBox } from "./core";
 import { PLANT_AT, drawBedroom } from "./bedroom";
 import { BUBBLE, blit, boxPts, bubble, cachedSet, clamp, cloud, cue, dim, gText, glowAt, ground, lerp, lerpP, newG, polyPts, pop, ramp, SERIF, smooth, UI, wob } from "./kit";
-import { JO, Look, Pose, RAE, SAM, THEM, breathe, drawChair, drawPerson, footShadow, sitChair, sitCross, sitPhone, stand, standPhone, withExpr } from "./person";
+import { JO, Look, Pose, RAE, SAM, breathe, drawChair, drawPerson, footShadow, sitChair, sitCross, sitPhone, stand, standPhone, withExpr } from "./person";
 import { drawPhone, Msg } from "./phone";
 import { drawPlant } from "./plant";
 import { field, ink, pool, W } from "./sets";
@@ -56,7 +56,7 @@ export const ch6YeahHaha = (ctx: Ctx, f: number, env: Env) => {
   const draft = f >= tOk && f < tQ1 + 4 ? "what are you up to this weekend?".slice(0, Math.floor((f - tOk) * 0.7)) : f >= tNo + 12 && f < tQ2 + 4 ? "any fun plans for the summer?".slice(0, Math.floor((f - tNo - 12) * 0.7)) : "";
   // "That's it." pushes in on the bubble
   const push = ramp(f, tIts, tIts + 16) * (1 - ramp(f, tThink, tThink + 16));
-  drawPhone(g, ctx, env, f, { cx: 960 + wob(f, 3, 0.02) * 5 + push * 160, cy: 500 + wob(f, 5, 0.02) * 4 - push * 120, k: 0.86 + push * 0.3, tilt: -2 + wob(f, 7, 0.015), title: "them", avatar: "#c3aedd", msgs, draft, caret: true, dim: 0 });
+  drawPhone(g, ctx, env, f, { cx: 960 + wob(f, 3, 0.02) * 5 + push * 160, cy: 500 + wob(f, 5, 0.02) * 4 - push * 120, k: 0.86 + push * 0.3, tilt: -2 + wob(f, 7, 0.015), title: "Jo", avatar: "#8aa6c9", msgs, draft, caret: true, dim: 0 });
   void tWhole; void tStill;
 };
 
@@ -75,7 +75,7 @@ export const ch7Interview = (ctx: Ctx, f: number, env: Env) => {
   glowAt(ctx, env, 960, 420, 700, "#fff1c8", 0.22);
   // Sam the interviewer (left) with cards and a mic; them (right) on the phone, mirrored
   at(g, 640, 860, 1.25, withExpr(sitChair(), { mouth: "o", brows: 0.4, look: [6, 0] }), SAM, f, { chair: true, shadow: 0 });
-  at(g, 1280, 860, 1.25, { ...withExpr(sitPhone(), { eyes: "down", mouth: "flat" }), flip: true }, THEM, f, { chair: true, shadow: 0 });
+  at(g, 1280, 860, 1.25, { ...withExpr(sitPhone(), { eyes: "down", mouth: "flat" }), flip: true }, JO, f, { chair: true, shadow: 0 });
   // the mic and a stack of question cards on the desk
   g.group("paint", () => { g.form(polyPts([[880, 700], [892, 610], [902, 610], [914, 700]], 4), "#4a4a56", "#2e2e38", { seed: 30 }); g.form(oval(897, 596, 20, 26, 10), "#6a6a78", "#3e3e4a", { seed: 31 }); [0, 1, 2].forEach((i) => g.form(polyPts([[700 + i * 3, 690 - i * 5], [800 + i * 3, 686 - i * 5], [802 + i * 3, 700 - i * 5], [702 + i * 3, 704 - i * 5]], 4), "#fbf7ef", "#d9d0c4", { seed: 32 + i })); });
   g.group("ink", () => { g.pen(oval(897, 596, 20, 26, 10), { closed: true, w: 2, seed: 35 }); g.pen([[897, 622], [897, 700]], { w: 2.4, seed: 36 }); });
@@ -150,7 +150,7 @@ export const ch9Chess = (ctx: Ctx, f: number, env: Env) => {
     g.group("plain", () => gText(g, label, cx, 450, { font: UI(26, 600), color: "#4a3a52" }));
   };
   const theirH = lerp(0, 4, ramp(f, tFour, tFour + 30)), myH = lerp(0, 5, ramp(f, tFour + 36, tFour + 70)) + (stop ? 0 : 0);
-  face(1420, "them · 4h", theirH, f >= tFour && f < tFour + 32, 800); face(1600, "you · 5h", myH, f >= tFour + 34 && !stop, 810);
+  face(1420, "Jo · 4h", theirH, f >= tFour && f < tFour + 32, 800); face(1600, "you · 5h", myH, f >= tFour + 34 && !stop, 810);
   if (f >= tRead) g.push(1060, 260, pop(f, tRead + 4, 10), -0.15), g.group("plain", () => { g.form(softBox(0, 0, 150, 56, 4, 18), "#f7e4e4", "#d9a9a9", { seed: 830 }); gText(g, "Read", 0, 1, { font: UI(30, 600), color: "#b04a4a" }); }), g.pop();
   if (stop) { g.push(800, 440, pop(f, tWhy, 10)); g.group("ink", () => { g.pen([[-50, -70], [-30, -110], [20, -116], [50, -80], [30, -40], [0, -16], [0, 20]], { w: 9, seed: 840, wobble: 0.6 }); g.pen(oval(0, 52, 8, 8, 8), { closed: true, w: 9, seed: 841 }); }, { alpha: 1 - ramp(f, tWrong + 40, tWrong + 60) }); g.pop(); }
   if (f >= tWrong) dim(ctx, env, "#b9a9b9", 0.35 * ramp(f, tWrong, tWrong + 40));
@@ -223,7 +223,7 @@ export const ch11Pattern = (ctx: Ctx, f: number, env: Env) => {
   if (f >= tTells) g.group("ink", () => { const x = 200 + DAY * 11.4; g.pen([[x - 20, 420], [x + 280, 418]], { w: 2, color: "#c4525a", seed: 1100, progress: ramp(f, tTells, tTells + 20), opacity: 0.8 }); });
   g.pop();
   // the lane labels stay put
-  g.group("plain", () => { g.fill(boxPts(-10, 300, 130, 760, 6), "#f5eee0", 0.92); gText(g, "you", 64, YOU, { font: SERIF(38), color: "#4f6f9f" }); gText(g, "them", 64, THEMY, { font: SERIF(38), color: "#7b6a96" }); }, { blur: 0 });
+  g.group("plain", () => { g.fill(boxPts(-10, 300, 130, 760, 6), "#f5eee0", 0.92); gText(g, "you", 64, YOU, { font: SERIF(38), color: "#4f6f9f" }); gText(g, "Jo", 64, THEMY, { font: SERIF(38), color: "#7b6a96" }); }, { blur: 0 });
   if (f >= tTells) g.group("plain", () => gText(g, "stop.", 1460, 300, { font: SERIF(64), color: "#c4525a", alpha: ramp(f, tTells + 10, tTells + 26) }));
-  void tStop; void tNothing; void GRAPHITE; void JO; void THEM; void standPhone; void sitPhone; void dim; void clamp;
+  void tStop; void tNothing; void GRAPHITE; void JO; void standPhone; void sitPhone; void dim; void clamp;
 };

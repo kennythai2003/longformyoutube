@@ -2,7 +2,7 @@
 import { Ctx, Env, Gfx, P, oval, softBox } from "./core";
 import { PLANT_AT, drawBedroom } from "./bedroom";
 import { BUBBLE, blit, boxPts, bubble, cachedSet, clamp, cloud, cue, dim, gText, glowAt, lerp, lerpP, newG, polyPts, pop, ramp, SERIF, smooth, UI, wob } from "./kit";
-import { JO, Look, Pose, RAE, SAM, breathe, drawPerson, footShadow, mixPose, sitCross, stand, standPour, walk, withExpr } from "./person";
+import { JO, KAI, Look, Pose, RAE, SAM, breathe, drawPerson, footShadow, mixPose, sitCross, stand, standPour, walk, withExpr } from "./person";
 import { drawPhone, Msg } from "./phone";
 import { drawPlant, drawSeedling, fallenLeaf } from "./plant";
 import { field, ink, parkSet, pool, W } from "./sets";
@@ -32,10 +32,10 @@ export const ch18Watering = (ctx: Ctx, f: number, env: Env) => {
   // Sam beside the window, pouring; lowers the can on "But you can't force", lifts it again, lowers it for good on "None of that"
   const pouring = (f >= tSend && f < tForce) || (f >= tAvail + 10 && f < tNone);
   const lift = ramp(f, tSend - 20, tSend) * (1 - ramp(f, tForce, tForce + 16)) + ramp(f, tAvail, tAvail + 16) * (1 - ramp(f, tNone, tNone + 20));
-  const base = withExpr(stand(), { look: [6, -4], brows: -0.4, mouth: "flat" }), pour = withExpr({ ...standPour(), wristR: [74, -214], elbowR: [48, -186], wristL: [52, -196], elbowL: [28, -160] }, { look: [6, -4], brows: -0.5, mouth: "flat", eyes: "open" });
+  const base = withExpr(stand(), { look: [6, -4], brows: -0.4, mouth: "flat" }), pour = withExpr({ ...standPour(), wristR: [70, -262], elbowR: [54, -214], wristL: [50, -242], elbowL: [30, -198], tilt: 4 }, { look: [6, -4], brows: -0.5, mouth: "flat", eyes: "open" });
   const S = 1.75, sx = 1240, sy = 890;
   at(g, sx, sy, S, mixPose(base, pour, lift), SAM, f);
-  const hand: P = lerpP([sx + 40 * S, sy - 116 * S], [sx + 74 * S, sy - 214 * S], lift), tilt = lerp(0.1, 0.55, pouring ? 1 : 0) * lift;
+  const hand: P = lerpP([sx + 40 * S, sy - 116 * S], [sx + 70 * S, sy - 262 * S], lift), tilt = lerp(0.05, 0.36, pouring ? 1 : 0) * lift;
   const tip = wateringCan(g, [hand[0] - 10, hand[1] + 8], tilt);
   const flow = f >= tMore && f < tLess ? 14 : f >= tLess && f < tWait ? 2 : 7;
   if (pouring && lift > 0.8) drops(g, f, tip, PLANT_AT[1] - 100, flow, 820);
@@ -68,7 +68,7 @@ export const ch19FaceDown = (ctx: Ctx, f: number, env: Env) => {
   const typing = f >= tStaring + 6 && f < tBreathe ? (Math.floor((f - tStaring) / 20) % 3 === 2 ? 0 : 1) : 0;
   const msgs: Msg[] = [{ side: "me", text: "hope your week's going ok", at: 0 }, { side: "them", text: "ya", at: 0 }, { side: "me", text: "haha nice", at: 0 }, { side: "me", text: "anyway", at: 0, read: 0 }];
   const cx = 860, cy = 500, k = 0.7, sq = Math.abs(Math.cos(flip * Math.PI));
-  if (flip <= 0) drawPhone(g, ctx, env, f, { cx, cy, k, tilt: 6, title: "them", avatar: "#c3aedd", msgs, draft, caret: true, typing, noHand: true });
+  if (flip <= 0) drawPhone(g, ctx, env, f, { cx, cy, k, tilt: 6, title: "Jo", avatar: "#8aa6c9", msgs, draft, caret: true, typing, noHand: true });
   else {
     // the turn, then the back of the phone: still, dark, with a camera
     const w = 470 * k * sq, h = 920 * k;
@@ -115,9 +115,9 @@ export const ch20Picnic = (ctx: Ctx, f: number, env: Env) => {
   const t0 = cue("The people who genuinely want to be in your life"), tNot = cue("Not every single time."), tCons = cue("But consistently enough"), tEff = cue("There will be effort."), tCur = cue("There will be curiosity."), tMom = cue("There will be moments where you don't have to do anything"), tLook = cue("That's what you're looking for."), tPerf = cue("Not perfection."), tRecip = cue("Just reciprocity.");
   blit(ctx, parkSet(env));
   const g = newG(ctx, env, f);
-  // Jo (left) and Rae (right) on the blanket; Jo shifts to make room; Sam walks in and sits between them
+  // Kai (left) and Rae (right) on the blanket; Kai shifts to make room; Sam walks in and sits between them
   const room = ramp(f, t0 + 20, t0 + 50), walkIn = clamp((f - t0) / 70), sitDown = ramp(f, t0 + 70, t0 + 90);
-  at(g, lerp(800, 700, room), 900, 1.15, withExpr(sitCross(), { mouth: "smile", look: [6, -2], brows: 0.3 }), JO, f, { shadow: 0 });
+  at(g, lerp(800, 700, room), 900, 1.15, withExpr(sitCross(), { mouth: "smile", look: [6, -2], brows: 0.3 }), KAI, f, { shadow: 0 });
   at(g, 1230, 910, 1.15, { ...withExpr(sitCross(), { mouth: f > tCur && f < tMom ? "o" : "smile", look: [6, -2], brows: 0.4 }), flip: true }, RAE, f, { shadow: 0 });
   const sx = lerp(1700, 960, smooth(walkIn));
   const samPose = sitDown > 0 ? mixPose(stand(), sitCross(), sitDown) : walk(f / 26);
@@ -125,15 +125,15 @@ export const ch20Picnic = (ctx: Ctx, f: number, env: Env) => {
   const seated: Pose = gotIt ? { ...samPose, elbowR: [30, -96], wristR: [44, -110], elbowL: [-20, -96], wristL: [14, -110], handL: "hold", handR: "hold" } : samPose;
   at(g, sx, lerp(900, 925, sitDown), 1.15, { ...withExpr(seated, { mouth: f > tNot ? "smile" : "soft", look: [-4, -2], eyes: f > tMom && f < tLook && Math.sin(f * 0.2) > 0.6 ? "closed" : "open", blush: 0.4 }), flip: sitDown > 0.5 }, SAM, f, { shadow: sitDown > 0.5 ? 0 : 0.25 });
   // the conversation keeps moving without Sam starting it
-  const say: [number, string, "jo" | "rae" | "sam"][] = [[tNot + 4, "how've you been??", "jo"], [tCons + 10, "we missed you", "rae"], [tEff, "brought your fave snacks", "jo"], [tCur, "wait, tell me everything", "rae"], [tMom + 6, "ok so guess what", "jo"], [tMom + 40, "no WAY", "rae"], [tMom + 70, "right?!", "jo"], [tLook + 4, "haha", "sam"]];
+  const say: [number, string, "kai" | "rae" | "sam"][] = [[tNot + 4, "how've you been??", "kai"], [tCons + 10, "we missed you", "rae"], [tEff, "brought your fave snacks", "kai"], [tCur, "wait, tell me everything", "rae"], [tMom + 6, "ok so guess what", "kai"], [tMom + 40, "no WAY", "rae"], [tMom + 70, "right?!", "kai"], [tLook + 4, "haha", "sam"]];
   say.forEach(([t, s, who], i) => {
     const next = say[i + 1]?.[0] ?? tRecip + 40, k = pop(f, t, 10) * (1 - ramp(f, next + 30, next + 44)); if (k <= 0) return;
-    const p: P = who === "jo" ? [560, 520] : who === "rae" ? [1370, 520] : [960, 470];
-    bubble(g, p[0] + wob(f, i, 0.03) * 6, p[1] - (i % 2) * 40, 40 + s.length * 15, 64, { fill: who === "jo" ? "#dfe8f4" : who === "rae" ? "#fbf0c6" : BUBBLE.me, shade: who === "jo" ? "#a9bcd6" : who === "rae" ? "#dcc97a" : BUBBLE.meShade, tail: who === "jo" ? "r" : "l", text: s, font: UI(28), seed: 300 + i, k });
+    const p: P = who === "kai" ? [560, 520] : who === "rae" ? [1370, 520] : [960, 470];
+    bubble(g, p[0] + wob(f, i, 0.03) * 6, p[1] - (i % 2) * 40, 40 + s.length * 15, 64, { fill: who === "kai" ? "#d6ece8" : who === "rae" ? "#fbf0c6" : BUBBLE.me, shade: who === "kai" ? "#9cc6be" : who === "rae" ? "#dcc97a" : BUBBLE.meShade, tail: who === "kai" ? "r" : "l", text: s, font: UI(28), seed: 300 + i, k });
   });
-  // "Just reciprocity.": Jo hands over a seedling
+  // "Just reciprocity.": Rae hands over a seedling
   const give = ramp(f, tRecip, tRecip + 26);
-  if (f >= tPerf) { const pos = lerpP([lerp(800, 700, room) + 60, 860], [sx - 6, 896], give); drawSeedling(g, f, pos[0], pos[1], 0.9, 1, 700); }
+  if (f >= tPerf) { const pos = lerpP([1170, 860], [sx + 6, 896], give); drawSeedling(g, f, pos[0], pos[1], 0.9, 1, 700); }
 };
 
 // ---------------------------------------------------------------- 21. put the phone down

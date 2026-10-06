@@ -1,7 +1,7 @@
 // Chapters 12-17: Jo reaches out, the door left open, the candle, the detective, the couch, the polaroids.
 import { Ctx, Env, Gfx, P, heart, oval, rng, softBox } from "./core";
 import { BUBBLE, blit, boxPts, bubble, cachedSet, clamp, cloud, cue, dim, gText, glowAt, ground, lerp, lerpP, mixC, newG, polyPts, pop, ramp, SERIF, smooth, UI, wob } from "./kit";
-import { JO, Look, Pose, RAE, SAM, THEM, breathe, drawPerson, footShadow, sitChair, stand, standChin, walk, withExpr } from "./person";
+import { JO, Look, Pose, RAE, SAM, breathe, drawPerson, footShadow, sitChair, stand, standChin, walk, withExpr } from "./person";
 import { drawPhone, Msg } from "./phone";
 import { field, ink, pool, W } from "./sets";
 
@@ -9,7 +9,7 @@ const at = (g: Gfx, x: number, y: number, s: number, pose: Pose, L: Look, f: num
   g.push(x, y, s); if (o.shadow !== 0) footShadow(g, 60, o.shadow ?? 0.28); drawPerson(g, o.breathe === false ? pose : breathe(pose, f, L.seed), L, f); g.pop();
 };
 
-// ---------------------------------------------------------------- 12. Jo reaches out
+// ---------------------------------------------------------------- 12. Rae reaches out (what someone who wants to talk to you looks like)
 // "Because when someone genuinely wants to talk to you" -> "And unfortunately"
 export const ch12Jo = (ctx: Ctx, f: number, env: Env) => {
   const tOwn = cue("They'll create their own."), tDay = cue("They'll tell you something that happened"), tRem = cue("They'll send you something that reminded them"), tAsk = cue("They'll ask what you're doing."), tFind = cue("They'll find a reason to continue"), tDrag = cue("You won't have to drag every response");
@@ -22,7 +22,7 @@ export const ch12Jo = (ctx: Ctx, f: number, env: Env) => {
     { side: "them", text: "this reminded me of you!!", at: tRem + 6 }, { side: "them", text: "what are you up to?", at: tAsk + 4 },
     { side: "me", text: "nothing much, you?", at: tFind + 2 }, { side: "them", text: "wanna get food saturday?", at: tFind + 26 },
   ];
-  drawPhone(g, ctx, env, f, { cx: 960 + wob(f, 3, 0.02) * 5, cy: 500 + wob(f, 5, 0.02) * 4, k: 0.86, tilt: 2 + wob(f, 7, 0.015), title: "Jo", avatar: "#8aa6c9", msgs, warm: 1, typing: f >= tDrag + 6 ? 1 : 0 });
+  drawPhone(g, ctx, env, f, { cx: 960 + wob(f, 3, 0.02) * 5, cy: 500 + wob(f, 5, 0.02) * 4, k: 0.86, tilt: 2 + wob(f, 7, 0.015), title: "Rae", avatar: "#f2d98a", msgs, warm: 1, typing: f >= tDrag + 6 ? 1 : 0 });
   // little hearts and sparks around the phone as her messages land
   g.group("paint", () => [tOwn, tDay, tRem, tAsk, tFind + 26].forEach((t, i) => { const u = (f - t) / 40; if (u < 0 || u > 1) return; const x = 1250 + (i % 2) * 80, y = 300 + i * 70 - u * 80; g.wash(heart(x, y, 16), "#f2899c", { alpha: 0.85 * (1 - u), seed: 50 + i, dx: 0, dy: 0, shrink: 1, rim: false }); }));
 };
@@ -68,7 +68,7 @@ export const ch13Door = (ctx: Ctx, f: number, env: Env) => {
   const turned = f >= tBad + 20;
   const feet = hall(0.5, 1, z), sc = 1.15 * (1 - z * 0.82);
   const tPose: Pose = turned ? withExpr({ ...stand(), elbowR: [30, -150], wristR: [42, -176], handR: "phone" }, { eyes: "down", mouth: "flat" }) : { ...(walking ? walk(ph) : stand()), back: true };
-  at(g, feet[0] + (turned ? 20 * sc : 0), feet[1], sc, tPose, THEM, f, { shadow: 0.2 });
+  at(g, feet[0] + (turned ? 20 * sc : 0), feet[1], sc, tPose, JO, f, { shadow: 0.2 });
   // their replies shrink as they go
   const replies: [number, string][] = [[tUn + 10, "hey sorry been busy"], [tLonger + 10, "ya"], [tStop + 10, "lol"], [tShort + 10, "k"]];
   replies.forEach(([t, s], i) => { const k = pop(f, t, 10) * (1 - ramp(f, t + 60, t + 74)); if (k > 0) bubble(g, feet[0] + 150, feet[1] - 300 * sc - 40, 30 + s.length * 14 * (1 - i * 0.15), 52 * (1 - i * 0.15), { fill: BUBBLE.them, shade: BUBBLE.themShade, tail: "l", text: s, font: UI(26 * (1 - i * 0.15)), seed: 80 + i, k }); });
@@ -153,7 +153,7 @@ export const ch15Detective = (ctx: Ctx, f: number, env: Env) => {
   g.pop();
   // sticky notes: the tallies
   const note = (x: number, y: number, k: number, label: string, tally: number, seed: number) => { if (k <= 0) return; g.push(x, y, k, (seed % 3 - 1) * 0.05); g.group("plain", () => { g.form(polyPts([[-90, -70], [90, -70], [90, 70], [-90, 70]], 4), "#f6e59a", "#d9c46a", { seed }); gText(g, label, 0, -36, { font: SERIF(30), color: "#3a3440" }); }); g.group("ink", () => { for (let i = 0; i < tally; i++) { const gx = -60 + (i % 5) * 16 + Math.floor(i / 5) * 90; if (i % 5 === 4) g.pen([[gx - 66, 30], [gx + 4, 6]], { w: 2.4, seed: seed + i, retrace: false }); else g.pen([[gx, 2], [gx + 2, 40]], { w: 2.4, seed: seed + i, retrace: false }); } if (tally === 0) gText(g, "0", 0, 22, { font: SERIF(44), color: "#c4525a" }); }); g.pop(); };
-  note(1460, 200, pop(f, tInit + 4, 10), "you", Math.min(10, Math.floor((f - tInit) / 3)), 300); note(1700, 220, pop(f, tAskYou + 4, 10), "them", 0, 320);
+  note(1460, 200, pop(f, tInit + 4, 10), "you", Math.min(10, Math.floor((f - tInit) / 3)), 300); note(1700, 220, pop(f, tAskYou + 4, 10), "Jo", 0, 320);
   // Sam the detective with a magnifier
   const turn = ramp(f, tFeel, tFeel + 16);
   const pose = withExpr({ ...stand(), elbowR: [34, -170], wristR: [24, -210], handR: "hold", tilt: lerp(-6, 4, turn), head: [lerp(-2, 6, turn), -252] }, { look: [lerp(-8, 2, turn), -4], brows: f > tConf ? -0.7 : 0.3, mouth: f > tConf ? "flat" : "soft", eyes: "open" });
@@ -235,7 +235,7 @@ export const ch17Polaroids = (ctx: Ctx, f: number, env: Env) => {
       if (kind === "heart") { g.form(heart(0, -20, 34), "#f2899c", "#c95f72", { seed: 622 }); }
       if (kind === "msgs") { [0, 1, 2].forEach((j) => g.form(softBox(j % 2 ? 22 : -22, -60 + j * 44, 100, 30, 4, 14), j % 2 ? BUBBLE.me : "#f6e3f0", j % 2 ? BUBBLE.meShade : "#d9b6cc", { seed: 623 + j })); }
     });
-    if (kind === "them" || kind === "laugh") { g.push(kind === "laugh" ? -26 : 0, 66, 0.5); drawPerson(g, withExpr({ ...stand(), head: [3, -252] }, { mouth: "grin", eyes: "closed", look: [0, 0] }), kind === "them" ? THEM : SAM, f, { noHands: true }); g.pop(); if (kind === "laugh") { g.push(40, 66, 0.5); drawPerson(g, { ...withExpr(stand(), { mouth: "grin", eyes: "closed", look: [0, 0] }), flip: true }, THEM, f, { noHands: true }); g.pop(); } }
+    if (kind === "them" || kind === "laugh") { g.push(kind === "laugh" ? -26 : 0, 66, 0.5); drawPerson(g, withExpr({ ...stand(), head: [3, -252] }, { mouth: "grin", eyes: "closed", look: [0, 0] }), kind === "them" ? JO : SAM, f, { noHands: true }); g.pop(); if (kind === "laugh") { g.push(40, 66, 0.5); drawPerson(g, { ...withExpr(stand(), { mouth: "grin", eyes: "closed", look: [0, 0] }), flip: true }, JO, f, { noHands: true }); g.pop(); } }
     g.group("plain", () => g.fill(ph, "#8a8794", 0.55 * grey));
     g.group("ink", () => { g.pen(fr, { closed: true, w: 2, seed: 640 + i, wobble: 0.3 }); g.pen(ph, { closed: true, w: 1.4, seed: 650 + i, opacity: 0.6, wobble: 0.3 }); g.pen(polyPts([[-10, -134], [10, -134], [10, -100], [-10, -100]], 3), { closed: true, w: 2, color: "#8a6a50", seed: 660 + i }); });
     g.pop();
