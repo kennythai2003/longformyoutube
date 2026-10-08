@@ -5,3 +5,4 @@ out/
 .cache/
 *.mp4
 .DS_Store
+voice-samples/
